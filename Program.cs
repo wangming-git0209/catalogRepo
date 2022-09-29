@@ -4,8 +4,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IItemsRepository, InMemItemsRepository>();
+
+builder.Services.AddSingleton<IMongoClient>(serviceProvicer => {
+    var setting = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+    return new MongoClient(settings.ConnectionString);
+});
+builder.Services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
